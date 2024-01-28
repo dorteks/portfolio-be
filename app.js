@@ -2,8 +2,8 @@ require("dotenv").config();
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const { requiresAuth } = require("express-openid-connect");
 const articleRouter = require("./src/routes/article");
+const googleRouter = require("./src/routes/google");
 
 const auth0Middleware = require("./auth/auth0");
 
@@ -28,20 +28,8 @@ app.get("/auth-check", (req, res) => {
   res.send(req.oidc.isAuthenticated() ? "Logged in" : "Logged out");
 });
 
-app.get("/", (req, res) => {
-  res.render("index", {
-    user: req.oidc.user,
-  });
-});
-
-app.get("/profile", requiresAuth(), (req, res) => {
-  console.log(req.oidc.user);
-  res.render("profile", {
-    user: req.oidc.user,
-  });
-});
-
 // other routes
+app.use("/", googleRouter);
 app.use("/articles", articleRouter);
 
 // catch errors from middleswares
